@@ -21,29 +21,24 @@ const Index = () => {
           try {
             const row = results.data[0] as any;
             const data: InvoiceData = {
-              invoiceNo: row["Invoice No"],
-              invoiceDate: row["Invoice date"],
-              dueDate: row["Due date"],
-              billToName: row["Bill to name"],
-              billToAddress: row["Bill to address"],
+              invoiceNo: "INV-" + Date.now(), // Generate a unique invoice number
+              invoiceDate: row["Invoice Date"],
+              dueDate: row["Due Date"],
+              billToName: row["Bill to Name"],
+              billToAddress: row["Bill to Address"],
               billFromName: row["Bill from Name"],
-              billFromAddress: row["Bill from address"],
+              billFromAddress: row["Bill from Address"],
               items: [
                 {
-                  name: row["Line item 1 name"],
-                  rate: parseFloat(row["Line item 1 rate"]),
-                  quantity: parseInt(row["Line item 1 qty"]),
-                  amount: parseFloat(row["Line item 1 amount"])
-                },
-                {
-                  name: row["Line item 2 name"],
-                  rate: parseFloat(row["Line item 2 rate"]),
-                  quantity: parseInt(row["Line item 2 qty"]),
-                  amount: parseFloat(row["Line item 2 amount"])
+                  name: row["Line Item 1 Name"],
+                  description: row["Line Item 1 Description"],
+                  rate: parseFloat(row["Line Item 1 Rate"].replace("$", "").replace(",", "")),
+                  quantity: 1, // Since quantity is not in CSV, defaulting to 1
+                  amount: parseFloat(row["Line Item 1 Amount"].replace("$", "").replace(",", ""))
                 }
               ],
-              subtotal: parseFloat(row["Subtotal"]),
-              taxRate: parseFloat(row["Tax rate"])
+              subtotal: parseFloat(row["Total Amount"].replace("$", "").replace(",", "")),
+              taxRate: 10 // Default tax rate since it's not in CSV
             };
             setInvoiceData(data);
             setCsvFile(file);

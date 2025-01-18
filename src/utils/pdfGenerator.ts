@@ -10,6 +10,7 @@ export interface InvoiceData {
   billFromAddress: string;
   items: Array<{
     name: string;
+    description: string;
     rate: number;
     quantity: number;
     amount: number;
@@ -51,8 +52,8 @@ export const generatePDF = (templateId: string, data: InvoiceData): jsPDF => {
   let yPos = 100;
   doc.setFontSize(10);
   doc.text("Item", 20, yPos);
-  doc.text("Rate", 100, yPos);
-  doc.text("Qty", 130, yPos);
+  doc.text("Description", 70, yPos);
+  doc.text("Rate", 130, yPos);
   doc.text("Amount", 160, yPos);
   
   // Items table content
@@ -60,8 +61,8 @@ export const generatePDF = (templateId: string, data: InvoiceData): jsPDF => {
   data.items.forEach(item => {
     if (item.name) {
       doc.text(item.name.toString(), 20, yPos);
-      doc.text(`$${item.rate.toFixed(2)}`, 100, yPos);
-      doc.text(item.quantity.toString(), 130, yPos);
+      doc.text(item.description || '', 70, yPos);
+      doc.text(`$${item.rate.toFixed(2)}`, 130, yPos);
       doc.text(`$${item.amount.toFixed(2)}`, 160, yPos);
       yPos += 10;
     }
