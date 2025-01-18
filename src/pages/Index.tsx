@@ -1,15 +1,12 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import FileUpload from "@/components/FileUpload";
-import TemplateSelector from "@/components/TemplateSelector";
-import { templates } from "@/utils/invoiceTemplates";
 import { generatePDF, InvoiceData } from "@/utils/pdfGenerator";
 import Papa from "papaparse";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [csvFile, setCsvFile] = useState<File | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState(templates[0].id);
   const [invoiceData, setInvoiceData] = useState<InvoiceData[]>([]);
   const { toast } = useToast();
 
@@ -22,7 +19,7 @@ const Index = () => {
             const invoices: InvoiceData[] = results.data
               .filter((row: any) => row["Invoice Date"]) // Filter out empty rows
               .map((row: any) => ({
-                invoiceNo: "INV-" + Date.now() + "-" + Math.floor(Math.random() * 1000), // Generate a unique invoice number
+                invoiceNo: "INV-" + Date.now() + "-" + Math.floor(Math.random() * 1000),
                 invoiceDate: row["Invoice Date"],
                 dueDate: row["Due Date"],
                 billToName: row["Bill to Name"],
@@ -34,12 +31,12 @@ const Index = () => {
                     name: row["Line Item 1 Name"],
                     description: row["Line Item 1 Description"],
                     rate: parseFloat(row["Line Item 1 Rate"].replace("$", "").replace(",", "")),
-                    quantity: 1, // Since quantity is not in CSV, defaulting to 1
+                    quantity: 1,
                     amount: parseFloat(row["Line Item 1 Amount"].replace("$", "").replace(",", ""))
                   }
                 ],
                 subtotal: parseFloat(row["Total Amount"].replace("$", "").replace(",", "")),
-                taxRate: 10 // Default tax rate since it's not in CSV
+                taxRate: 10
               }));
 
             setInvoiceData(invoices);
@@ -74,7 +71,7 @@ const Index = () => {
 
     try {
       invoiceData.forEach((data, index) => {
-        const doc = generatePDF(selectedTemplate, data);
+        const doc = generatePDF(data);
         doc.save(`invoice-${data.invoiceNo}.pdf`);
       });
       
@@ -109,16 +106,7 @@ const Index = () => {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold mb-4">2. Select Template</h2>
-            <TemplateSelector
-              templates={templates}
-              selectedTemplate={selectedTemplate}
-              onSelect={setSelectedTemplate}
-            />
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold mb-4">3. Generate PDFs</h2>
+            <h2 className="text-xl font-semibold mb-4">2. Generate PDFs</h2>
             <Button
               onClick={handleGeneratePDF}
               disabled={invoiceData.length === 0}
